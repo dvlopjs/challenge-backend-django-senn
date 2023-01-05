@@ -19,9 +19,11 @@ class CreateEmployee(APIView):
         return Response(f"Employee {employee.name} created successfully", status=201)
 
 class UpdateEmployee(APIView):
-    def put(self, response, employee_id):
+    def put(self, request, id_employee):
         name = request.data.get('name')
         job_title = request.data.get('job_title')
         salary = request.data.get('salary')
         
-        employee = update_employee(name, job_title, salary)
+        employee = update_employee(id_employee, name, job_title, salary)
+
+        return Response(f"Employee {id_employee} updated successfully", status=201)
