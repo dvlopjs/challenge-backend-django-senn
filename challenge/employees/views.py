@@ -3,7 +3,10 @@ from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from employees.employees_excel import get_excel_employees
+from employees.serializers import EmployeeSerializer
 from employees.services import create_employee, update_employee
+from employees.selectors import list_employees, get_employees
 # Create your views here.
 class CreateEmployee(APIView):
     class InputSerializer(serializers.Serializer):
@@ -27,3 +30,20 @@ class UpdateEmployee(APIView):
         employee = update_employee(id_employee, name, job_title, salary)
 
         return Response(f"Employee {id_employee} updated successfully", status=201)
+
+class ListEmployees(APIView):
+    def get(self, request):
+        query_job_or_name = request.query_params.get("query_job_or_name")
+        filter_by_salary = request.query_params.get("filter_by_salary")
+
+        employees = list_employees(query_job_or_name, filter_by_salary)
+        
+        return Response({"employees": EmployeeSerializer(employees, many=True).data}, status=200)
+
+class ListReportSalary(APIView):
+    def get(self, request):
+        employees = get_employees()
+        
+        return get_excel_employees(employees)
+        # return Response({"employees": EmployeeSerializer(employees, many=True).data}, status=200)
+
